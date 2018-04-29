@@ -29,11 +29,11 @@ LoggerWarningLevel = logging.DEBUG
 # LoggerWarningLevel = logging.WARNING
 # LoggerWarningLevel = logging.ERROR
 
-EnableLanding = False
+EnableLanding = True
 
 TakeOffHight = 2
 dt = 0.1
-q = 0.85
+q = 0.9
 q_land = 0.9
 
 class LQR_sim:
@@ -201,9 +201,14 @@ class LQR_sim:
                       [0, dt]])
 
         
-        Q = q_land * np.eye(4)
-        R = (1-q_land) * np.array([[100, 0],\
-                                   [0, 100]])
+        Q = q * np.array([[1, 0, 0, 0], \
+                          [0, 1, 0, 0], \
+                          [0, 0, 10, 0 ], \
+                          [0, 0, 0, 10 ]])
+
+        R = (1-q) * np.array([[2, 0],\
+                              [0, 2]])
+
 
 
         state_error = - np.array([[u[0]], [u[1]], [u_dot[0]], [u_dot[1]]])
@@ -258,8 +263,8 @@ class LQR_sim:
                           [0, 0, 10, 0 ], \
                           [0, 0, 0, 10 ]])
 
-        R = (1-q) * np.array([[1, 0],\
-                              [0, 1]])
+        R = (1-q) * np.array([[2, 0],\
+                              [0, 2]])
 
 
         state_error = - np.array([[u[0]], [u[1]], [u_dot[0]], [u_dot[1]]])
@@ -281,10 +286,8 @@ class LQR_sim:
         # self.vy1 = np.clip(self.vy1, -5, 5)
 
         # self.fight_control(self.vx1, -self.vy1, 0, 0)
-        if self.drone_position_z < 0.5:
-            self.fight_control(self.vx1, self.vy1, 0, 0)
-        else:
-            self.fight_control(self.vx1, self.vy1, 0, 0)
+    
+        self.fight_control(self.vx1, self.vy1, 0, 0)
 
         # desired_angle = 0
 
@@ -382,7 +385,7 @@ class LQR_sim:
     def ReceiveNavdata(self, data):
         self.drone_yaw = data.rotZ
         self.drone_yaw_radians = math.radians(self.drone_yaw)
-        print "yaw angle", self.drone_yaw , self.drone_yaw_radians
+        # print "yaw angle", self.drone_yaw , self.drone_yaw_radians
 
     def TimerCallback(self, event):
         self.show_gazebo_models()
